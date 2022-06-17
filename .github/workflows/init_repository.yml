@@ -1,0 +1,40 @@
+name: Initialize Spring Project
+on:
+  push:
+    branches:
+      - main
+jobs:
+  generate-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Spring CLI
+        run: |
+          brew tap spring-io/tap
+          brew install spring-boot
+
+      - name: Run Spring Initializr
+        run: |
+          spring init \
+            --build=gradle \
+            --language=kotlin \
+            --java-version=18 \
+            --packaging=war \
+            --group-id=com.eficode \
+            --artifact-id=testing \
+            --name=testing \
+            --description=Testing \
+            --dependencies=web \
+            --force \
+            --extract
+
+#      - name: Remove initialization workflow
+#        run: rm .github/workflows/init_repository.yml
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Initialize Spring project
+          title: Initialize Spring project
+          delete-branch: true
